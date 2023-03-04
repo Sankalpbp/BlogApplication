@@ -29,11 +29,9 @@ public class PostServiceImpl implements PostService {
 
     public List<PostDTO> getAllPosts ( ) {
         List<Post> allPosts = postRepository.findAll ();
-        List<PostDTO> allPostsResponse = allPosts.stream ()
-                .map ( post -> entityToDTO ( post ) )
-                .collect ( Collectors.toList ( ) );
-
-        return allPostsResponse;
+        return allPosts.stream ()
+                       .map ( this::entityToDTO )
+                       .collect ( Collectors.toList ( ) );
     }
 
     private PostDTO entityToDTO ( Post post ) {
