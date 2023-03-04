@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -20,38 +21,41 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDTO createPost ( PostDTO post ) {
-        Post newPost = new Post();
-        newPost.setTitle ( post.getTitle ( ) );
-        newPost.setDescription ( post.getDescription ( ) );
-        newPost.setContent ( post.getContent ( ) );
-
+        Post newPost = dtoToEntity ( post );
         Post createdPost = postRepository.save ( newPost );
 
-        PostDTO postResponse = new PostDTO ();
-        postResponse.setId ( createdPost.getId () );
-        postResponse.setTitle ( createdPost.getTitle ( ) );
-        postResponse.setDescription ( createdPost.getDescription ( ) );
-        postResponse.setContent ( createdPost.getContent ( ) );
-
-        return postResponse;
+        return entityToDTO ( createdPost );
     }
 
     public List<PostDTO> getAllPosts ( ) {
         List<Post> allPosts = postRepository.findAll ();
-        List<PostDTO> allPostsResponse = new ArrayList<>();
-
-        for ( Post post : allPosts ) {
-            PostDTO newPost = new PostDTO ();
-
-            newPost.setId ( post.getId ( ) );
-            newPost.setTitle ( post.getTitle () );
-            newPost.setDescription ( post.getDescription ( ) );
-            newPost.setContent ( post.getContent ( ) );
-
-            allPostsResponse.add ( newPost );
-        }
+        List<PostDTO> allPostsResponse = allPosts.stream ()
+                .map ( post -> entityToDTO ( post ) )
+                .collect ( Collectors.toList ( ) );
 
         return allPostsResponse;
+    }
+
+    private PostDTO entityToDTO ( Post post ) {
+        PostDTO postDTO = new PostDTO ( );
+
+        postDTO.setId ( post.getId ( ) );
+        postDTO.setTitle ( post.getTitle ( ) );
+        postDTO.setDescription ( post.getDescription ( ) );
+        postDTO.setContent ( post.getContent ( ) );
+
+        return postDTO;
+    }
+
+    private Post dtoToEntity ( PostDTO postDTO ) {
+        Post post = new Post ();
+
+        post.setId ( postDTO.getId ( ) );
+        post.setTitle ( postDTO.getTitle ( ) );
+        post.setDescription ( postDTO.getDescription ( ) );
+        post.setContent ( postDTO.getContent ( ) );
+
+        return post;
     }
 
 }
