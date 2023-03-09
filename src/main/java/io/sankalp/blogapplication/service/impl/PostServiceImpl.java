@@ -1,12 +1,12 @@
 package io.sankalp.blogapplication.service.impl;
 
 import io.sankalp.blogapplication.entity.Post;
+import io.sankalp.blogapplication.exception.ResourceNotFoundException;
 import io.sankalp.blogapplication.payload.PostDTO;
 import io.sankalp.blogapplication.repository.PostRepository;
 import io.sankalp.blogapplication.service.PostService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +25,35 @@ public class PostServiceImpl implements PostService {
         Post createdPost = postRepository.save ( newPost );
 
         return entityToDTO ( createdPost );
+    }
+
+    public PostDTO getPostById ( Long id ) {
+        Post post = postRepository.findById ( id )
+                                  .orElseThrow ( () -> new ResourceNotFoundException ( "Post",
+                                                                                       "id",
+                                                                                       id.toString () ) );
+
+        return entityToDTO ( post );
+    }
+
+    public PostDTO updatePost ( PostDTO postDTO, Long id ) {
+        Post post = postRepository.findById ( id )
+                                  .orElseThrow ( () -> new ResourceNotFoundException ( "Post",
+                                                                                       "id",
+                                                                                       id.toString () ) );
+
+        post.setTitle ( postDTO.getTitle () );
+        post.setDescription( postDTO.getDescription () );
+        post.setContent ( postDTO.getContent () );
+
+        Post updatedPost = postRepository.save ( post );
+        return entityToDTO ( updatedPost );
+    }
+
+    public String deletePostById ( Long id ) {
+        postRepository.deleteById ( id );
+
+        return "Post Deleted successfully!";
     }
 
     public List<PostDTO> getAllPosts ( ) {
