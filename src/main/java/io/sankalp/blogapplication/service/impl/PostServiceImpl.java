@@ -3,6 +3,7 @@ package io.sankalp.blogapplication.service.impl;
 import io.sankalp.blogapplication.entity.Post;
 import io.sankalp.blogapplication.exception.ResourceNotFoundException;
 import io.sankalp.blogapplication.payload.PostDTO;
+import io.sankalp.blogapplication.payload.PostResponse;
 import io.sankalp.blogapplication.repository.PostRepository;
 import io.sankalp.blogapplication.service.PostService;
 import org.springframework.data.domain.Page;
@@ -59,16 +60,29 @@ public class PostServiceImpl implements PostService {
         return "Post Deleted successfully!";
     }
 
-    public List<PostDTO> getAllPosts ( int pageNumber, int pageSize ) {
+    public PostResponse getAllPosts ( int pageNumber, int pageSize ) {
 
         Pageable pageable = PageRequest.of ( pageNumber, pageSize );
         Page<Post> pageOfPosts = postRepository.findAll ( pageable );
 
         List<Post> posts = pageOfPosts.getContent ();
 
-        return posts.stream ()
-                       .map ( this::entityToDTO )
-                       .collect ( Collectors.toList ( ) );
+        List<PostDTO> content = posts.stream ( )
+                                     .map ( this::entityToDTO )
+                                     .toList ();
+
+        PostResponse postResponse = new PostResponse ();
+        postResponse.setContent ( content );
+        postResponse.setPageNumber ( pageNumber );
+        postResponse.setTotalElements ( postRepository.count () );
+        postResponse.setPageSize ( pageSize );
+
+        long totalPages = ( long ) Math.ceil ( postRepository.count () * 1.0 / pageSize );
+        postResponse.setTotalPages ( totalPages );
+
+        postResponse.setLast ( pageNumber == totalPages - 1 );
+
+        return postResponse;
     }
 
     private PostDTO entityToDTO ( Post post ) {

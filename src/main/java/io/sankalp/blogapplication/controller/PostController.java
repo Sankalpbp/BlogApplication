@@ -1,6 +1,7 @@
 package io.sankalp.blogapplication.controller;
 
 import io.sankalp.blogapplication.payload.PostDTO;
+import io.sankalp.blogapplication.payload.PostResponse;
 import io.sankalp.blogapplication.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostDTO>> getAllPosts (
+    public ResponseEntity<PostResponse> getAllPosts (
             @RequestParam ( value = "pageNumber", defaultValue = "0", required = false ) int pageNumber,
             @RequestParam ( value = "pageSize", defaultValue = "5", required = false ) int pageSize
     ) {
