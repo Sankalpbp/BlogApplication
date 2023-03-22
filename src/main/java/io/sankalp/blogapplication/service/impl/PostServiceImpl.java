@@ -5,6 +5,9 @@ import io.sankalp.blogapplication.exception.ResourceNotFoundException;
 import io.sankalp.blogapplication.payload.PostDTO;
 import io.sankalp.blogapplication.repository.PostRepository;
 import io.sankalp.blogapplication.service.PostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,9 +59,14 @@ public class PostServiceImpl implements PostService {
         return "Post Deleted successfully!";
     }
 
-    public List<PostDTO> getAllPosts ( ) {
-        List<Post> allPosts = postRepository.findAll ();
-        return allPosts.stream ()
+    public List<PostDTO> getAllPosts ( int pageNumber, int pageSize ) {
+
+        Pageable pageable = PageRequest.of ( pageNumber, pageSize );
+        Page<Post> pageOfPosts = postRepository.findAll ( pageable );
+
+        List<Post> posts = pageOfPosts.getContent ();
+
+        return posts.stream ()
                        .map ( this::entityToDTO )
                        .collect ( Collectors.toList ( ) );
     }
