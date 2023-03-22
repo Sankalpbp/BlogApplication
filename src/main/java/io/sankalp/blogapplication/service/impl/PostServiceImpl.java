@@ -1,5 +1,7 @@
 package io.sankalp.blogapplication.service.impl;
 
+import io.sankalp.blogapplication.builder.PostDTOBuilder;
+import io.sankalp.blogapplication.builder.PostResponseBuilder;
 import io.sankalp.blogapplication.entity.Post;
 import io.sankalp.blogapplication.exception.ResourceNotFoundException;
 import io.sankalp.blogapplication.payload.PostDTO;
@@ -71,26 +73,23 @@ public class PostServiceImpl implements PostService {
                                      .map ( this::entityToDTO )
                                      .toList ();
 
-        PostResponse postResponse = new PostResponse ();
-        postResponse.setContent ( content );
-        postResponse.setPageNumber ( pageNumber );
-        postResponse.setTotalElements ( postRepository.count () );
-        postResponse.setPageSize ( pageSize );
-        postResponse.setTotalPages ( pageOfPosts.getTotalPages () );
-        postResponse.setLast ( pageOfPosts.isLast () );
-
-        return postResponse;
+        return PostResponseBuilder.create ()
+                .content ( content )
+                        .totalPages ( pageOfPosts.getTotalPages () )
+                                .totalElements ( pageOfPosts.getTotalElements () )
+                                        .last ( pageOfPosts.isLast () )
+                                                .pageNumber ( pageNumber )
+                                                        .pageSize ( pageSize )
+                                                            .build ();
     }
 
     private PostDTO entityToDTO ( Post post ) {
-        PostDTO postDTO = new PostDTO ( );
-
-        postDTO.setId ( post.getId ( ) );
-        postDTO.setTitle ( post.getTitle ( ) );
-        postDTO.setDescription ( post.getDescription ( ) );
-        postDTO.setContent ( post.getContent ( ) );
-
-        return postDTO;
+        return PostDTOBuilder.create ( )
+                             .id ( post.getId () )
+                             .title ( post.getTitle () )
+                             .description ( post.getDescription () )
+                             .content ( post.getContent () )
+                             .build ();
     }
 
     private Post dtoToEntity ( PostDTO postDTO ) {
