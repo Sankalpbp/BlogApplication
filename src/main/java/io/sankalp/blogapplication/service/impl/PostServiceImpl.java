@@ -76,11 +76,8 @@ public class PostServiceImpl implements PostService {
         postResponse.setPageNumber ( pageNumber );
         postResponse.setTotalElements ( postRepository.count () );
         postResponse.setPageSize ( pageSize );
-
-        long totalPages = ( long ) Math.ceil ( postRepository.count () * 1.0 / pageSize );
-        postResponse.setTotalPages ( totalPages );
-
-        postResponse.setLast ( pageNumber == totalPages - 1 );
+        postResponse.setTotalPages ( pageOfPosts.getTotalPages () );
+        postResponse.setLast ( pageOfPosts.isLast () );
 
         return postResponse;
     }
