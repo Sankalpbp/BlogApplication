@@ -63,9 +63,13 @@ public class PostServiceImpl implements PostService {
         return "Post Deleted successfully!";
     }
 
-    public PostResponse getAllPosts ( int pageNumber, int pageSize, String sortBy ) {
+    public PostResponse getAllPosts ( int pageNumber, int pageSize, String sortBy, String sortDir ) {
 
-        Pageable pageable = PageRequest.of ( pageNumber, pageSize, Sort.by ( sortBy ).descending () );
+        Sort sort = sortDir.equalsIgnoreCase ( Sort.Direction.ASC.name () )
+                        ? Sort.by ( sortBy ).ascending ()
+                        : Sort.by ( sortBy ).descending ();
+
+        Pageable pageable = PageRequest.of ( pageNumber, pageSize, sort );
         Page<Post> pageOfPosts = postRepository.findAll ( pageable );
 
         List<Post> posts = pageOfPosts.getContent ();

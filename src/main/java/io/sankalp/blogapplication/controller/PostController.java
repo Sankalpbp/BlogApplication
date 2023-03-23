@@ -28,9 +28,10 @@ public class PostController {
     public ResponseEntity<PostResponse> getAllPosts (
             @RequestParam ( value = "pageNumber", defaultValue = "0", required = false ) int pageNumber,
             @RequestParam ( value = "pageSize", defaultValue = "5", required = false ) int pageSize,
-            @RequestParam ( value = "sortBy", defaultValue = "id", required = false ) String sortBy
+            @RequestParam ( value = "sortBy", defaultValue = "id", required = false ) String sortBy,
+            @RequestParam ( value = "sortDir", defaultValue = "asc", required = false ) String sortDir
     ) {
-        return new ResponseEntity<> ( postService.getAllPosts ( pageNumber, pageSize, sortBy ), HttpStatus.OK );
+        return new ResponseEntity<> ( postService.getAllPosts ( pageNumber, pageSize, sortBy, sortDir ), HttpStatus.OK );
     }
 
     @GetMapping ( "/{id}" )
