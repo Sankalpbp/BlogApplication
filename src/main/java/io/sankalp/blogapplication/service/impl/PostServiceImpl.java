@@ -11,6 +11,7 @@ import io.sankalp.blogapplication.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -62,9 +63,9 @@ public class PostServiceImpl implements PostService {
         return "Post Deleted successfully!";
     }
 
-    public PostResponse getAllPosts ( int pageNumber, int pageSize ) {
+    public PostResponse getAllPosts ( int pageNumber, int pageSize, String sortBy ) {
 
-        Pageable pageable = PageRequest.of ( pageNumber, pageSize );
+        Pageable pageable = PageRequest.of ( pageNumber, pageSize, Sort.by ( sortBy ).descending () );
         Page<Post> pageOfPosts = postRepository.findAll ( pageable );
 
         List<Post> posts = pageOfPosts.getContent ();
