@@ -9,6 +9,9 @@ import io.sankalp.blogapplication.repository.PostRepository;
 import io.sankalp.blogapplication.service.CommentService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class CommentServiceImpl implements CommentService {
 
@@ -34,6 +37,13 @@ public class CommentServiceImpl implements CommentService {
         Comment createdComment = commentRepository.save ( comment );
 
         return entityToDTO ( createdComment );
+    }
+
+    public List<CommentDTO> getCommentsByPostId ( Long postId ) {
+        return commentRepository.findByPostId ( postId )
+                                .stream ()
+                                .map ( this::entityToDTO )
+                                .toList ();
     }
 
     private Comment dtoToEntity ( CommentDTO commentDTO ) {
