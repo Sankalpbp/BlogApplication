@@ -2,11 +2,13 @@ package io.sankalp.blogapplication.service.impl;
 
 import io.sankalp.blogapplication.entity.Comment;
 import io.sankalp.blogapplication.entity.Post;
+import io.sankalp.blogapplication.exception.BlogAPIException;
 import io.sankalp.blogapplication.exception.ResourceNotFoundException;
 import io.sankalp.blogapplication.payload.CommentDTO;
 import io.sankalp.blogapplication.repository.CommentRepository;
 import io.sankalp.blogapplication.repository.PostRepository;
 import io.sankalp.blogapplication.service.CommentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -44,6 +46,25 @@ public class CommentServiceImpl implements CommentService {
                                 .stream ()
                                 .map ( this::entityToDTO )
                                 .toList ();
+    }
+
+    public CommentDTO getCommentById ( Long commentId, Long postId ) {
+        Comment comment = commentRepository.findById ( commentId )
+                .orElseThrow ( () -> new ResourceNotFoundException ( "comment",
+                                                                     "id",
+                                                                     commentId.toString () ) );
+
+        Post post = postRepository.findById ( postId )
+                                  .orElseThrow ( () -> new ResourceNotFoundException ( "post",
+                                                                                       "id",
+                                                                                       postId.toString () ) );
+
+        if ( !comment.getPost ().getId ().equals ( post.getId () ) ) {
+            throw new BlogAPIException ( HttpStatus.BAD_REQUEST,
+                    "Comment does not belong to the postId mentioned." );
+        }
+
+        return entityToDTO ( comment );
     }
 
     private Comment dtoToEntity ( CommentDTO commentDTO ) {
