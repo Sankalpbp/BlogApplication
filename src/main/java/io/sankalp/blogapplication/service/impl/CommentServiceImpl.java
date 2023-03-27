@@ -41,6 +41,7 @@ public class CommentServiceImpl implements CommentService {
         return entityToDTO ( createdComment );
     }
 
+    @Override
     public List<CommentDTO> getCommentsByPostId ( Long postId ) {
         return commentRepository.findByPostId ( postId )
                                 .stream ()
@@ -48,6 +49,7 @@ public class CommentServiceImpl implements CommentService {
                                 .toList ();
     }
 
+    @Override
     public CommentDTO getCommentById ( Long commentId, Long postId ) {
         Comment comment = commentRepository.findById ( commentId )
                 .orElseThrow ( () -> new ResourceNotFoundException ( "comment",
@@ -65,6 +67,32 @@ public class CommentServiceImpl implements CommentService {
         }
 
         return entityToDTO ( comment );
+    }
+
+    @Override
+    public CommentDTO updateComment ( CommentDTO commentDTO, Long postId, Long commentId ) {
+        Comment comment = commentRepository.findById ( commentId )
+                .orElseThrow ( () -> new ResourceNotFoundException ( "Comment",
+                                                                     "id",
+                                                                     commentId.toString () ) );
+
+        Post post = postRepository.findById ( postId )
+                .orElseThrow ( () -> new ResourceNotFoundException ( "Post",
+                                                                     "id",
+                                                                     postId.toString () ) );
+
+        if ( !comment.getPost ().getId ().equals ( post.getId () ) ) {
+            throw new BlogAPIException ( HttpStatus.BAD_REQUEST,
+                    "Comment does not belong to the postId mentioned." );
+        }
+
+        comment.setName ( commentDTO.getName () );
+        comment.setBody ( commentDTO.getBody () );
+        comment.setEmail ( commentDTO.getEmail () );
+
+        Comment updatedComment = commentRepository.save ( comment );
+
+        return entityToDTO ( updatedComment );
     }
 
     private Comment dtoToEntity ( CommentDTO commentDTO ) {
