@@ -8,6 +8,7 @@ import io.sankalp.blogapplication.payload.PostDTO;
 import io.sankalp.blogapplication.payload.PostResponse;
 import io.sankalp.blogapplication.repository.PostRepository;
 import io.sankalp.blogapplication.service.PostService;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +23,12 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
 
-    public PostServiceImpl ( PostRepository postRepository ) {
+    private ModelMapper mapper;
+
+    public PostServiceImpl ( PostRepository postRepository,
+                             ModelMapper mapper ) {
         this.postRepository = postRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -89,23 +94,11 @@ public class PostServiceImpl implements PostService {
     }
 
     private PostDTO entityToDTO ( Post post ) {
-        return PostDTOBuilder.create ( )
-                             .id ( post.getId () )
-                             .title ( post.getTitle () )
-                             .description ( post.getDescription () )
-                             .content ( post.getContent () )
-                             .build ();
+        return mapper.map ( post, PostDTO.class );
     }
 
     private Post dtoToEntity ( PostDTO postDTO ) {
-        Post post = new Post ();
-
-        post.setId ( postDTO.getId ( ) );
-        post.setTitle ( postDTO.getTitle ( ) );
-        post.setDescription ( postDTO.getDescription ( ) );
-        post.setContent ( postDTO.getContent ( ) );
-
-        return post;
+        return mapper.map ( postDTO, Post.class );
     }
 
 }
