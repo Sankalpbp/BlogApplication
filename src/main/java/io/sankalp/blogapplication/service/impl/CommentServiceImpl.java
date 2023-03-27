@@ -11,7 +11,6 @@ import io.sankalp.blogapplication.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -53,12 +52,12 @@ public class CommentServiceImpl implements CommentService {
     public CommentDTO getCommentById ( Long commentId, Long postId ) {
         Comment comment = commentRepository.findById ( commentId )
                 .orElseThrow ( () -> new ResourceNotFoundException ( "comment",
-                                                                     "id",
+                                                                     "commentId",
                                                                      commentId.toString () ) );
 
         Post post = postRepository.findById ( postId )
                                   .orElseThrow ( () -> new ResourceNotFoundException ( "post",
-                                                                                       "id",
+                                                                                       "postId",
                                                                                        postId.toString () ) );
 
         if ( !comment.getPost ().getId ().equals ( post.getId () ) ) {
@@ -73,12 +72,12 @@ public class CommentServiceImpl implements CommentService {
     public CommentDTO updateComment ( CommentDTO commentDTO, Long postId, Long commentId ) {
         Comment comment = commentRepository.findById ( commentId )
                 .orElseThrow ( () -> new ResourceNotFoundException ( "Comment",
-                                                                     "id",
+                                                                     "commentId",
                                                                      commentId.toString () ) );
 
         Post post = postRepository.findById ( postId )
                 .orElseThrow ( () -> new ResourceNotFoundException ( "Post",
-                                                                     "id",
+                                                                     "postId",
                                                                      postId.toString () ) );
 
         if ( !comment.getPost ().getId ().equals ( post.getId () ) ) {
@@ -93,6 +92,37 @@ public class CommentServiceImpl implements CommentService {
         Comment updatedComment = commentRepository.save ( comment );
 
         return entityToDTO ( updatedComment );
+    }
+
+    @Override
+    public String deleteCommentById ( Long commentId, Long postId ) {
+        validateCommentUsingPost ( commentId, postId );
+        commentRepository.deleteById ( commentId );
+        return "Comment related to postId: " + postId + " has been successfully deleted.";
+    }
+
+    private void validateCommentUsingPost (Long commentId, Long postId ) {
+        Post post = getPost ( postId );
+        Comment comment = getComment ( commentId );
+
+        if ( !comment.getPost ().getId ().equals ( postId ) ) {
+            throw new BlogAPIException ( HttpStatus.BAD_REQUEST,
+                    "Comment does not belong to the given postId" );
+        }
+    }
+
+    private Post getPost ( Long postId ) {
+        return postRepository.findById ( postId )
+                             .orElseThrow ( () -> new ResourceNotFoundException ( "Post",
+                                                                                  "postId",
+                                                                                  postId.toString () ) );
+    }
+
+    private Comment getComment ( Long commentId ) {
+        return commentRepository.findById ( commentId )
+                                .orElseThrow ( () -> new ResourceNotFoundException ( "Comment",
+                                                                                     "commentId",
+                                                                                     commentId.toString () ) );
     }
 
     private Comment dtoToEntity ( CommentDTO commentDTO ) {
