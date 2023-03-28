@@ -1,10 +1,12 @@
 package io.sankalp.blogapplication.service.impl;
 
 import io.sankalp.blogapplication.builder.PostResponseBuilder;
+import io.sankalp.blogapplication.entity.Category;
 import io.sankalp.blogapplication.entity.Post;
 import io.sankalp.blogapplication.exception.ResourceNotFoundException;
 import io.sankalp.blogapplication.payload.PostDTO;
 import io.sankalp.blogapplication.payload.PostResponse;
+import io.sankalp.blogapplication.repository.CategoryRepository;
 import io.sankalp.blogapplication.repository.PostRepository;
 import io.sankalp.blogapplication.service.PostService;
 import org.modelmapper.ModelMapper;
@@ -15,24 +17,32 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
-
     private ModelMapper mapper;
+    private CategoryRepository categoryRepository;
 
     public PostServiceImpl ( PostRepository postRepository,
-                             ModelMapper mapper ) {
+                             ModelMapper mapper,
+                             CategoryRepository categoryRepository) {
         this.postRepository = postRepository;
         this.mapper = mapper;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
     public PostDTO createPost ( PostDTO post ) {
+
+        Category category = categoryRepository.findById ( post.getCategoryId () )
+                .orElseThrow ( () -> new ResourceNotFoundException ( "category",
+                        "id",
+                        post.getCategoryId ().toString () ) );
+
         Post newPost = dtoToEntity ( post );
+        newPost.setCategory ( category );
         Post createdPost = postRepository.save ( newPost );
 
         return entityToDTO ( createdPost );
