@@ -12,4 +12,8 @@ public interface CategoryService {
 
     public List<CategoryDTO> getAllCategories ( );
 
+    public CategoryDTO updateCategory ( CategoryDTO category, Long id );
+
+    public String deleteCategoryById ( Long id );
+
 }

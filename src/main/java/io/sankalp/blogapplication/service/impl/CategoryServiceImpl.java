@@ -51,4 +51,32 @@ public class CategoryServiceImpl implements CategoryService {
                 .collect ( Collectors.toList () );
     }
 
+    @Override
+    public CategoryDTO updateCategory ( CategoryDTO categoryDTO, Long id ) {
+        Category category = categoryRepository.findById ( id )
+                .orElseThrow ( () -> new ResourceNotFoundException ( "category",
+                        "id",
+                        id.toString () ) );
+
+        category.setName ( categoryDTO.getName () );
+        category.setDescription ( categoryDTO.getDescription () );
+
+        Category updatedCategory = categoryRepository.save ( category );
+
+        return mapper.map ( updatedCategory, CategoryDTO.class );
+    }
+
+    @Override
+    public String deleteCategoryById ( Long id ) {
+
+        Category category = categoryRepository.findById ( id )
+                        .orElseThrow ( () -> new ResourceNotFoundException ( "category",
+                                                                             "id",
+                                                                             id.toString () ) );
+
+        categoryRepository.deleteById ( id );
+
+        return "Category Deleted Successfully!";
+    }
+
 }

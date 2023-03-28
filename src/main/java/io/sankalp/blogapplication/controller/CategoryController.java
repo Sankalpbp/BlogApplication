@@ -35,4 +35,16 @@ public class CategoryController {
         return ResponseEntity.ok ( categoryService.getAllCategories () );
     }
 
+    @PutMapping ( "/update/{id}" )
+    @PreAuthorize ( "hasRole ( 'ADMIN' )" )
+    public ResponseEntity<CategoryDTO> updateCategory ( @RequestBody CategoryDTO category, @PathVariable Long id ) {
+        return ResponseEntity.ok ( categoryService.updateCategory ( category, id ) );
+    }
+
+    @DeleteMapping ( "/delete/{id}" )
+    @PreAuthorize ( "hasRole ( 'ADMIN' )" )
+    public ResponseEntity<String> deleteCategory ( @PathVariable Long id ) {
+        return ResponseEntity.ok ( categoryService.deleteCategoryById ( id ) );
+    }
+
 }
