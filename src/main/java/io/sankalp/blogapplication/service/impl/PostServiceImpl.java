@@ -1,6 +1,5 @@
 package io.sankalp.blogapplication.service.impl;
 
-import io.sankalp.blogapplication.builder.PostDTOBuilder;
 import io.sankalp.blogapplication.builder.PostResponseBuilder;
 import io.sankalp.blogapplication.entity.Post;
 import io.sankalp.blogapplication.exception.ResourceNotFoundException;
