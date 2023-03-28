@@ -63,9 +63,15 @@ public class PostServiceImpl implements PostService {
                                                                                        "id",
                                                                                        id.toString () ) );
 
+        Category category = categoryRepository.findById ( postDTO.getCategoryId () )
+                        .orElseThrow ( () -> new ResourceNotFoundException ( "category",
+                                "id",
+                                postDTO.getCategoryId ().toString () ) );
+
         post.setTitle ( postDTO.getTitle () );
         post.setDescription( postDTO.getDescription () );
         post.setContent ( postDTO.getContent () );
+        post.setCategory ( category );
 
         Post updatedPost = postRepository.save ( post );
         return entityToDTO ( updatedPost );
