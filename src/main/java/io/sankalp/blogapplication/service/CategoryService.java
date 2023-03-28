@@ -5,4 +5,6 @@ import io.sankalp.blogapplication.payload.CategoryDTO;
 public interface CategoryService {
 
     public CategoryDTO addCategory ( CategoryDTO category );
+
+    public CategoryDTO getCategoryById ( Long id );
 }
