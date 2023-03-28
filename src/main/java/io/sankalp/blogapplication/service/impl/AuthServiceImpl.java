@@ -3,10 +3,12 @@ package io.sankalp.blogapplication.service.impl;
 import io.sankalp.blogapplication.entity.Role;
 import io.sankalp.blogapplication.entity.User;
 import io.sankalp.blogapplication.exception.BlogAPIException;
+import io.sankalp.blogapplication.payload.JwtAuthResponseDTO;
 import io.sankalp.blogapplication.payload.LoginDTO;
 import io.sankalp.blogapplication.payload.RegisterDTO;
 import io.sankalp.blogapplication.repository.RoleRepository;
 import io.sankalp.blogapplication.repository.UserRepository;
+import io.sankalp.blogapplication.security.JwtTokenProvider;
 import io.sankalp.blogapplication.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,26 +28,33 @@ public class AuthServiceImpl implements AuthService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    private JwtTokenProvider tokenProvider;
 
     public AuthServiceImpl ( AuthenticationManager authenticationManager,
                              UserRepository userRepository,
                              RoleRepository roleRepository,
-                             PasswordEncoder passwordEncoder ) {
+                             PasswordEncoder passwordEncoder,
+                             JwtTokenProvider tokenProvider) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
-    public String login ( LoginDTO login ) {
+    public JwtAuthResponseDTO login (LoginDTO login ) {
         Authentication authentication = authenticationManager.authenticate (
                 new UsernamePasswordAuthenticationToken ( login.getUsernameOrEmail (),
                                                           login.getPassword () ) );
 
         SecurityContextHolder.getContext ().setAuthentication ( authentication );
 
-        return "User Logged-in successfully!";
+        String token = tokenProvider.generateToken ( authentication );
+        JwtAuthResponseDTO authResponse = new JwtAuthResponseDTO ();
+        authResponse.setAccessToken ( token );
+
+        return authResponse;
     }
 
     @Override

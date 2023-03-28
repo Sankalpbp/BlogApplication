@@ -1,5 +1,6 @@
 package io.sankalp.blogapplication.controller;
 
+import io.sankalp.blogapplication.payload.JwtAuthResponseDTO;
 import io.sankalp.blogapplication.payload.LoginDTO;
 import io.sankalp.blogapplication.payload.RegisterDTO;
 import io.sankalp.blogapplication.service.AuthService;
@@ -26,9 +27,9 @@ public class AuthController {
             "/login",
             "/signIn"
     })
-    public ResponseEntity<String> login ( @RequestBody LoginDTO login ) {
-        String response = authService.login ( login );
-        return ResponseEntity.ok ( response );
+    public ResponseEntity<JwtAuthResponseDTO> login ( @RequestBody LoginDTO login ) {
+        JwtAuthResponseDTO authResponse = authService.login ( login );
+        return ResponseEntity.ok ( authResponse );
     }
 
     @PostMapping ( value = {
