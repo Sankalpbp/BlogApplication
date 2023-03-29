@@ -48,7 +48,7 @@ public class PostController {
 
     @Operation (
         summary = "GET All Posts REST API",
-        description = "GET All Posts REST API is used to all the Posts from database"
+        description = "GET All Posts REST API is used to get all the Posts from database"
     )
     @ApiResponse (
         responseCode = "200",
