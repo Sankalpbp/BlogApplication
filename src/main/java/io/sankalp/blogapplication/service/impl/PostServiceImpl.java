@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -81,6 +82,14 @@ public class PostServiceImpl implements PostService {
         postRepository.deleteById ( id );
 
         return "Post Deleted successfully!";
+    }
+
+    public List<PostDTO> getPostsByCategoryId ( Long categoryId ) {
+        List<Post> posts = postRepository.findByCategoryId ( categoryId );
+
+        return posts.stream ()
+                .map ( this::entityToDTO )
+                .collect ( Collectors.toList () );
     }
 
     public PostResponse getAllPosts ( int pageNumber, int pageSize, String sortBy, String sortDir ) {
